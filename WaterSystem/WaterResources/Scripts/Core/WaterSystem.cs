@@ -125,7 +125,17 @@ namespace KWS
         {
             foreach (var instance in WaterSharedResources.WaterInstances)
             {
-                if (!instance.IsWaterVisible && UseNetworkBuoyancy == false) continue;
+                // if (!instance.IsWaterVisible && UseNetworkBuoyancy == false) continue;
+                bool isAnyPointInBounds = false;
+                for (int i = 0; i < worldPositions.Length; i++)
+                {
+                    if (instance.WorldSpaceBounds.ContainsXZ(worldPositions[i]))
+                    {
+                        isAnyPointInBounds = true;
+                        break;
+                    }
+                }
+                if (!isAnyPointInBounds) continue;
                 if (!instance.WorldSpaceBounds.Contains(worldPositions[0])) continue;
 
                 instance.GetCurrentWaterSurfaceData(worldPositions, worldNormals);
@@ -256,7 +266,11 @@ namespace KWS
                 if (string.IsNullOrEmpty(_waterGUID)) _waterGUID = CreateWaterInstanceID();
                 return _waterGUID;
 #else
-                if (string.IsNullOrEmpty(_waterGUID)) Debug.LogError("Water GUID is empty, therefore shoreline/flowing/etc will not work!");
+                if (string.IsNullOrEmpty(_waterGUID)) 
+                {
+                    Debug.LogWarning("Water GUID is empty. Generating runtime GUID.");
+                    _waterGUID = System.Guid.NewGuid().ToString();
+                }
                 return _waterGUID;
 #endif
             }
@@ -579,11 +593,21 @@ namespace KWS
             if (cam.cameraType == CameraType.Game) _lastGameCamera = cam;
             else if (cam.cameraType == CameraType.SceneView) _lastEditorCamera = cam;
            
-            if (CameraDatas.Count > 100) CameraDatas.Clear();
+            /* if (CameraDatas.Count > 100) CameraDatas.Clear();
             if (!CameraDatas.ContainsKey(cam)) CameraDatas.Add(cam, new CameraData(cam));
             CameraDatas[cam].Update();
 
             if (WaterSharedResources.FrustumCaches.Count > 10) WaterSharedResources.FrustumCaches.Clear();
+            if (!WaterSharedResources.FrustumCaches.ContainsKey(cam)) WaterSharedResources.FrustumCaches.Add(cam, new WaterSharedResources.CameraFrustumCache());
+            WaterSharedResources.FrustumCaches[cam].Update(cam);*/
+            
+            // 1. 安全地清理已经销毁 (被置为 null) 的相机引用
+            CleanUpDeadCameraCaches();
+
+            // 2. 正常的获取或添加逻辑
+            if (!CameraDatas.ContainsKey(cam)) CameraDatas.Add(cam, new CameraData(cam));
+            CameraDatas[cam].Update();
+
             if (!WaterSharedResources.FrustumCaches.ContainsKey(cam)) WaterSharedResources.FrustumCaches.Add(cam, new WaterSharedResources.CameraFrustumCache());
             WaterSharedResources.FrustumCaches[cam].Update(cam);
 
@@ -598,6 +622,50 @@ namespace KWS
             SetGlobalPlatformSpecificShaderParams(cam);
             UpdateArrayShaderParams();
 
+        }
+        
+        private static void CleanUpDeadCameraCaches()
+        {
+            // C# 字典在遍历时不能直接修改，所以先找出所有 null 的键
+            List<Camera> deadCameras = null;
+
+            foreach (var camKey in CameraDatas.Keys)
+            {
+                // Unity 重载了 == 运算符，如果相机被 Destroy 了，这里会判定为 true
+                if (camKey == null)
+                {
+                    if (deadCameras == null) deadCameras = new List<Camera>();
+                    deadCameras.Add(camKey);
+                }
+            }
+
+            // 从字典中移除这些死相机
+            if (deadCameras != null)
+            {
+                foreach (var dead in deadCameras)
+                {
+                    CameraDatas.Remove(dead);
+                }
+            }
+
+            // 对 FrustumCaches 做同样的死对象清理
+            List<Camera> deadFrustumCaches = null;
+            foreach (var camKey in WaterSharedResources.FrustumCaches.Keys)
+            {
+                if (camKey == null)
+                {
+                    if (deadFrustumCaches == null) deadFrustumCaches = new List<Camera>();
+                    deadFrustumCaches.Add(camKey);
+                }
+            }
+
+            if (deadFrustumCaches != null)
+            {
+                foreach (var dead in deadFrustumCaches)
+                {
+                    WaterSharedResources.FrustumCaches.Remove(dead);
+                }
+            }
         }
 
 

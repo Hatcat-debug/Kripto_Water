@@ -79,7 +79,11 @@ namespace KWS
 
             //as we can use keywords for non-water effect, like underwater particles, then I need to instal it here, even water is not visible
             Shader.SetKeyword(KWS_ShaderConstants.WaterKeywords.GlobalKeyword_KWS_USE_VOLUMETRIC_LIGHT,   WaterSharedResources.IsAnyWaterUseVolumetricLighting);
-            Shader.SetKeyword(KWS_ShaderConstants.WaterKeywords.GlobalKeyword_KWS_USE_HALF_LINE_TENSION,  WaterSharedResources.GlobalSettings.UseUnderwaterHalfLineTensionEffect);
+
+            if (WaterSharedResources.GlobalSettings != null)
+            {
+                Shader.SetKeyword(KWS_ShaderConstants.WaterKeywords.GlobalKeyword_KWS_USE_HALF_LINE_TENSION,  WaterSharedResources.GlobalSettings.UseUnderwaterHalfLineTensionEffect);
+            }
 
             LastFrameRenderedCameras.RemoveWhere(item => item == null);
             _passHandler.OnBeforeFrameRendering(LastFrameRenderedCameras, _customFixedUpdates);

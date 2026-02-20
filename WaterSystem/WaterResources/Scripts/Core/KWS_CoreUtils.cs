@@ -717,10 +717,8 @@ namespace KWS
                 Debug.LogError("Can't load the shader '" + shaderName + "'. Try to right click this shader -> reimport");
                 return null;
             }
-
-            var newShader = UnityEngine.Object.Instantiate(cs);
-            Resources.UnloadAsset(cs);
-            return newShader;
+            
+            return cs;
         }
 
 

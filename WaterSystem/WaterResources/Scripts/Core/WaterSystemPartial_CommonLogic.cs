@@ -18,7 +18,7 @@ namespace KWS
         //If you press ctrl+z after deleting the water gameobject, unity returns all objects without links and save all objects until you close the editor. Not sure how to fix that =/ 
         void ClearUndoObjects(Transform parent)
         {
-            if (parent.childCount > 0)
+            while (parent.childCount > 0)
             {
                 KW_Extensions.SafeDestroy(parent.GetChild(0).gameObject);
             }
@@ -578,7 +578,9 @@ namespace KWS
 
             Shader.SetGlobalInt(DynamicWaterParams.KWS_UnderwaterVisible, IsCameraUnderwater ? 1 : 0);
             Shader.SetGlobalFloat(DynamicWaterParams.KW_Time, KW_Extensions.TotalTime());
-            Shader.SetGlobalFloat(ConstantWaterParams.KW_GlobalTimeScale, WaterSharedResources.GlobalSettings.GlobalTimeScale);
+            
+            float globalTimeScale = WaterSharedResources.GlobalSettings != null ? WaterSharedResources.GlobalSettings.GlobalTimeScale : 1.0f;
+            Shader.SetGlobalFloat(ConstantWaterParams.KW_GlobalTimeScale, globalTimeScale);
 
             Shader.SetGlobalInteger(ConstantWaterParams.KWS_WaterLayerMask, KWS_Settings.Water.WaterLayer);
             Shader.SetGlobalInteger(ConstantWaterParams.KWS_WaterLightLayerMask, KWS_Settings.Water.LightLayer);

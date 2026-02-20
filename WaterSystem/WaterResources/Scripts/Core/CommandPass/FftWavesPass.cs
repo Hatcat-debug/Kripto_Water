@@ -188,11 +188,19 @@ namespace KWS
         public override void Release()
         {
             WaterSharedResources.OnAnyWaterSettingsChanged -= OnAnyWaterSettingsChanged;
-            
+    
             foreach (var butterflyTexture in _butterflyTextures) KW_Extensions.SafeDestroy(butterflyTexture.Value);
             _butterflyTextures.Clear();
 
             _globalFftWavesTextures.Release();
+
+            // ========= 新增：释放 CommandBuffer 的 Native 内存 =========
+            if (_cmd != null)
+            {
+                _cmd.Release();
+                _cmd = null;
+            }
+            // ==========================================================
 
             this.WaterLog(String.Empty, KW_Extensions.WaterLogMessageType.Release);
         }
@@ -292,20 +300,21 @@ namespace KWS
         void UpdateSpectrum(CommandBuffer cmd, WaterSystemScriptableData settings, FftWavesData lod)
         {
             var spectrumShader = lod.spectrumShader;
+            
+            if (spectrumShader == null)
+            {
+                Debug.LogError("Water UpdateSpectrum error: spectrumShader is null");
+                return;
+            }
+
             var time = KW_Extensions.TotalTime() * settings.CurrentTimeScale;
             var size = (int)settings.CurrentFftWavesQuality;
 
 #if KWS_DEBUG
-            if (WaterSystem.RebuildMaxHeight) time *= 5;
+    if (WaterSystem.RebuildMaxHeight) time *= 5;
 #endif
 
             cmd.SetComputeFloatParam(spectrumShader, "time", time);
-
-            if (spectrumShader == null)
-            {
-                Debug.LogError($"Water UpdateSpectrum error: {spectrumShader}");
-                return;
-            }
             cmd.DispatchCompute(spectrumShader, kernelSpectrumUpdate, size / 8, size / 8, settings.CurrentFftWavesCascades);
         }
 
