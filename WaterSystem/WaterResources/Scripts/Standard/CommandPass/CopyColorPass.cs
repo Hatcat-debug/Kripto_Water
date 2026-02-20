@@ -40,7 +40,7 @@ namespace KWS
 
         public override void ExecuteCommandBuffer(WaterPassContext waterContext)
         {
-            if (WaterSharedResources.CameraOpaqueTexture == null) InitializeTextures();
+            if (WaterSharedResources.CameraOpaqueTexture == null || _RTHandleSystem == null) InitializeTextures();
             var target     = WaterSharedResources.CameraOpaqueTexture;
 
             var screenSize = KWS_CoreUtils.GetScreenSize(KWS_CoreUtils.SinglePassStereoEnabled);

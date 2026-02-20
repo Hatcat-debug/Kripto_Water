@@ -173,7 +173,7 @@ namespace KWS
 
             var data = ssrDatas[cam];
 
-            if (data.ReflectionRT[0] == null) data.InitializeTextures();
+            if (data.ReflectionRT[0] == null || data.ReflectionRT[0].rt == null) data.InitializeTextures();
 
             var targetRT     = data.Frame % 2 == 0 ? data.ReflectionRT[0] : data.ReflectionRT[1];
             var lastTargetRT = data.Frame % 2 == 0 ? data.ReflectionRT[1] : data.ReflectionRT[0];
@@ -223,7 +223,7 @@ namespace KWS
             var data = ssrDatas[cam];
 
             if (_cs == null) InitializeShaders();
-            if (data.ReflectionRT[0] == null) data.InitializeTextures();
+            if (data.ReflectionRT[0] == null || data.ReflectionRT[0].rt == null) data.InitializeTextures();
 
             if (_cs == null) return;
 

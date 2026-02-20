@@ -23,12 +23,15 @@ namespace KWS
      
         void InitializePrepassTextures()
         {
-            if (WaterSharedResources.WaterPrePassRT0 != null) return;
-
-            WaterSharedResources.WaterPrePassRT0 = KWS_CoreUtils.RTHandleAllocVR(_rtScale, name: "_waterPrePassRT0", colorFormat: GraphicsFormat.R8G8B8A8_UNorm);
-            WaterSharedResources.WaterPrePassRT1 = KWS_CoreUtils.RTHandleAllocVR(_rtScale, name: "_waterPrePassRT1", colorFormat: GraphicsFormat.R16G16_SNorm);
-            WaterSharedResources.WaterDepthRT    = KWS_CoreUtils.RTHandleAllocVR(_rtScale, name: "_waterDepthRT",    depthBufferBits: DepthBits.Depth24);
-           
+            if (WaterSharedResources.WaterPrePassRT0 == null)
+                WaterSharedResources.WaterPrePassRT0 = KWS_CoreUtils.RTHandleAllocVR(_rtScale, name: "_waterPrePassRT0", colorFormat: GraphicsFormat.R8G8B8A8_UNorm);
+    
+            if (WaterSharedResources.WaterPrePassRT1 == null)
+                WaterSharedResources.WaterPrePassRT1 = KWS_CoreUtils.RTHandleAllocVR(_rtScale, name: "_waterPrePassRT1", colorFormat: GraphicsFormat.R16G16_SNorm);
+    
+            if (WaterSharedResources.WaterDepthRT == null)
+                WaterSharedResources.WaterDepthRT    = KWS_CoreUtils.RTHandleAllocVR(_rtScale, name: "_waterDepthRT",    depthBufferBits: DepthBits.Depth24);
+            
             Shader.SetGlobalTexture(MaskPassID.KWS_WaterPrePassRT0, WaterSharedResources.WaterPrePassRT0);
             Shader.SetGlobalTexture(MaskPassID.KWS_WaterPrePassRT1, WaterSharedResources.WaterPrePassRT1);
             Shader.SetGlobalTexture(MaskPassID.KWS_WaterDepthRT,    WaterSharedResources.WaterDepthRT);
@@ -38,27 +41,32 @@ namespace KWS
 
         void InitializeIntersectionHalflineTensionTextures()
         {
-            if (WaterSharedResources.WaterIntersectionHalfLineTensionMaskRT != null) return;
-
-            WaterSharedResources.WaterIntersectionHalfLineTensionMaskRT = KWS_CoreUtils.RTHandleAllocVR(_rtScaleTension, name: "_waterIntersectionHalfLineTensionMaskRT", colorFormat: GraphicsFormat.R8_UNorm);
-            _tempIntersectionTensionRT                                  = KWS_CoreUtils.RTHandleAllocVR(_rtScaleTension, name: "_tempIntersectionTensionRT",              colorFormat: GraphicsFormat.R8_UNorm);
+            if (WaterSharedResources.WaterIntersectionHalfLineTensionMaskRT == null)
+                WaterSharedResources.WaterIntersectionHalfLineTensionMaskRT = KWS_CoreUtils.RTHandleAllocVR(_rtScaleTension, name: "_waterIntersectionHalfLineTensionMaskRT", colorFormat: GraphicsFormat.R8_UNorm);
+            
+            if (_tempIntersectionTensionRT == null)
+                _tempIntersectionTensionRT = KWS_CoreUtils.RTHandleAllocVR(_rtScaleTension, name: "_tempIntersectionTensionRT", colorFormat: GraphicsFormat.R8_UNorm);
+            
             Shader.SetGlobalTexture(MaskPassID.KWS_WaterIntersectionHalfLineTensionMaskRT, WaterSharedResources.WaterIntersectionHalfLineTensionMaskRT);
         }
 
 
         void InitializeBackfaceTextures()
         {
-            if (WaterSharedResources.WaterBackfacePrePassRT0 != null) return;
-
-            WaterSharedResources.WaterBackfacePrePassRT0 = KWS_CoreUtils.RTHandleAllocVR(_rtScaleAquarium, name: "_waterAquariumBackfacePrePassRT0", colorFormat: GraphicsFormat.R8G8B8A8_UNorm);
-            WaterSharedResources.WaterBackfacePrePassRT1 = KWS_CoreUtils.RTHandleAllocVR(_rtScaleAquarium, name: "_waterAquariumBackfacePrePassRT1", colorFormat: GraphicsFormat.R16G16_SNorm);
-            WaterSharedResources.WaterBackfaceDepthRT = KWS_CoreUtils.RTHandleAllocVR(_rtScaleAquarium, name: "_waterAquariumBackfaceDepthRT", depthBufferBits: DepthBits.Depth24);
+            // if (WaterSharedResources.WaterBackfacePrePassRT0 != null) return;
+    
+            if (WaterSharedResources.WaterBackfacePrePassRT0 == null)
+                WaterSharedResources.WaterBackfacePrePassRT0 = KWS_CoreUtils.RTHandleAllocVR(_rtScaleAquarium, name: "_waterAquariumBackfacePrePassRT0", colorFormat: GraphicsFormat.R8G8B8A8_UNorm);
+    
+            if (WaterSharedResources.WaterBackfacePrePassRT1 == null)
+                WaterSharedResources.WaterBackfacePrePassRT1 = KWS_CoreUtils.RTHandleAllocVR(_rtScaleAquarium, name: "_waterAquariumBackfacePrePassRT1", colorFormat: GraphicsFormat.R16G16_SNorm);
+    
+            if (WaterSharedResources.WaterBackfaceDepthRT == null)
+                WaterSharedResources.WaterBackfaceDepthRT = KWS_CoreUtils.RTHandleAllocVR(_rtScaleAquarium, name: "_waterAquariumBackfaceDepthRT", depthBufferBits: DepthBits.Depth24);
 
             Shader.SetGlobalTexture(MaskPassID.KWS_WaterBackfacePrePassRT0, WaterSharedResources.WaterBackfacePrePassRT0);
             Shader.SetGlobalTexture(MaskPassID.KWS_WaterBackfacePrePassRT1, WaterSharedResources.WaterBackfacePrePassRT1);
             Shader.SetGlobalTexture(MaskPassID.KWS_WaterBackfaceDepthRT,    WaterSharedResources.WaterBackfaceDepthRT);
-
-
 
             this.WaterLog(WaterSharedResources.WaterBackfacePrePassRT0, WaterSharedResources.WaterBackfacePrePassRT1, WaterSharedResources.WaterBackfaceDepthRT);
         }
